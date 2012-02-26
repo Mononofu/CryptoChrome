@@ -22,11 +22,11 @@ function saveToClipboard(text) {
 
 function encryptText(response) {
   var clear_txt = response.msg;
-
-  // send it to plugin to encrypt
-  // hardcode recipient for now
-  var cipher_txt = plugin().encrypt("j.schrittwieser@gmail.com", clear_txt);
-  saveToClipboard(cipher_txt);
+  if(clear_txt != "") {
+    var recipient = prompt("Please enter the recipients email","");
+    var cipher_txt = plugin().encrypt(recipient, clear_txt);
+    saveToClipboard(cipher_txt);
+  }
 }
 
 function decryptText(response) {
@@ -43,11 +43,11 @@ function clearsignText(response) {
 
 function encryptSignText (response) {
   var clear_txt = response.msg;
-
-  // send it to plugin to encrypt
-  // hardcode recipient for now
-  var cipher_txt = plugin().encrypt_sign("j.schrittwieser@gmail.com", clear_txt);
-  saveToClipboard(cipher_txt);
+  if(clear_txt != "") {
+    var recipient = prompt("Please enter the recipients email","");
+    var cipher_txt = plugin().encrypt_sign(recipient, clear_txt);
+    saveToClipboard(cipher_txt);
+  }
 }
 
 function load()
