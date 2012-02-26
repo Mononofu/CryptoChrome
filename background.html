@@ -1,0 +1,107 @@
+<html>
+<head>
+<script>
+
+function updateAddress(tabId) {
+  console.log("check for gnupg");
+  //chrome.tabs.sendRequest(tabId, {}, function(address) {  });
+}
+
+/*
+chrome.extension.onRequest.addListener(
+  function(request, sender, sendResponse) {
+    sendResponse( plugin().decrypt(request) );
+  });
+
+chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
+  if (change.status == "complete") {
+    updateAddress(tabId);
+  }
+});*/
+
+// Ensure the current selected tab is set up.
+/*chrome.tabs.getSelected(null, function(tab) {
+  updateAddress(tab.id);
+});*/
+
+function plugin0()
+{
+  return document.getElementById('plugin');
+}
+
+plugin = plugin0;
+
+
+// A generic onclick callback function.
+/*function genericOnClick(info, tab) {
+  console.log("item " + info.menuItemId + " was clicked");
+  console.log("info: " + JSON.stringify(info));
+  console.log("tab: " + JSON.stringify(tab));
+}*/
+
+function encryptSelection(info, tab) {
+  // get the selected text
+  console.log("send message to tab to request text");
+  chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptText);
+}
+
+function encryptText(response) {
+  var clear_txt = response.msg;
+
+  // send it to plugin to encrypt
+  // hardcode recipient for now
+  var cipher_txt = plugin().encrypt("j.schrittwieser@gmail.com", clear_txt);
+
+  // now save it to clipboard
+  var textarea = document.getElementById("tmp-clipboard");
+
+  // now we put the message in the textarea
+  textarea.value = cipher_txt;
+
+  // and copy the text from the textarea
+  textarea.select();
+  document.execCommand("copy", false, null);
+}
+
+function decryptSelection(info, tab) {
+  // get the selected text
+  console.log("send message to tab to request text");
+  chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, decryptText);
+}
+
+function decryptText(response) {
+  cipther_txt = response.msg;
+
+  // send it to plugin to encrypt
+  // hardcode recipient for now
+  var clear_txt = plugin().decrypt(cipther_txt);
+
+  var textarea = document.getElementById("tmp-clipboard");
+
+  // now we put the message in the textarea
+  textarea.value = clear_txt;
+
+  // and copy the text from the textarea
+  textarea.select();
+  document.execCommand("copy", false, null);
+}
+
+
+
+function load()
+{
+  // add entry to context menu
+  console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": encryptSelection}) );
+  console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": decryptSelection}) );
+}
+
+</script>
+
+</head>
+<body onload="load()">
+
+<embed id="plugin" type="application/x-cryptochrome">
+<textarea id="tmp-clipboard"></textarea>
+
+</body>
+</html>

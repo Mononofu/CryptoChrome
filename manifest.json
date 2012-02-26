@@ -1,0 +1,22 @@
+{
+  "name": "CryptoChrome",
+  "version": "1.0",
+  "description": "A GnuPG interface for Chrome",
+  "background_page": "background.html",
+
+  "icons": {
+    "48": "gnupg.jpg"
+  },
+
+  "content_scripts": [
+    { "matches": ["<all_urls>"], "js": ["content_script.js"], "all_frames": true }
+  ],
+
+  "plugins": [
+    { "path": "npCryptoChrome.so", "public": true}
+  ],
+
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*", "contextMenus"
+  ]
+}
