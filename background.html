@@ -2,47 +2,22 @@
 <head>
 <script>
 
-function updateAddress(tabId) {
-  console.log("check for gnupg");
-  //chrome.tabs.sendRequest(tabId, {}, function(address) {  });
-}
-
-/*
-chrome.extension.onRequest.addListener(
-  function(request, sender, sendResponse) {
-    sendResponse( plugin().decrypt(request) );
-  });
-
-chrome.tabs.onUpdated.addListener(function(tabId, change, tab) {
-  if (change.status == "complete") {
-    updateAddress(tabId);
-  }
-});*/
-
-// Ensure the current selected tab is set up.
-/*chrome.tabs.getSelected(null, function(tab) {
-  updateAddress(tab.id);
-});*/
-
-function plugin0()
-{
+function plugin0() {
   return document.getElementById('plugin');
 }
 
 plugin = plugin0;
 
+function saveToClipboard(text) {
+  // now save it to clipboard
+  var textarea = document.getElementById("tmp-clipboard");
 
-// A generic onclick callback function.
-/*function genericOnClick(info, tab) {
-  console.log("item " + info.menuItemId + " was clicked");
-  console.log("info: " + JSON.stringify(info));
-  console.log("tab: " + JSON.stringify(tab));
-}*/
+  // now we put the message in the textarea
+  textarea.value = text;
 
-function encryptSelection(info, tab) {
-  // get the selected text
-  console.log("send message to tab to request text");
-  chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptText);
+  // and copy the text from the textarea
+  textarea.select();
+  document.execCommand("copy", false, null);
 }
 
 function encryptText(response) {
@@ -51,74 +26,45 @@ function encryptText(response) {
   // send it to plugin to encrypt
   // hardcode recipient for now
   var cipher_txt = plugin().encrypt("j.schrittwieser@gmail.com", clear_txt);
-
-  // now save it to clipboard
-  var textarea = document.getElementById("tmp-clipboard");
-
-  // now we put the message in the textarea
-  textarea.value = cipher_txt;
-
-  // and copy the text from the textarea
-  textarea.select();
-  document.execCommand("copy", false, null);
-}
-
-function decryptSelection(info, tab) {
-  // get the selected text
-  console.log("send message to tab to request text");
-  chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, decryptText);
+  saveToClipboard(cipher_txt);
 }
 
 function decryptText(response) {
   cipther_txt = response.msg;
-
-  // send it to plugin to encrypt
-  // hardcode recipient for now
   var clear_txt = plugin().decrypt(cipther_txt);
-
-  var textarea = document.getElementById("tmp-clipboard");
-
-  // now we put the message in the textarea
-  textarea.value = clear_txt;
-
-  // and copy the text from the textarea
-  textarea.select();
-  document.execCommand("copy", false, null);
-}
-
-
-
-function clearsignSelection(info, tab) {
-  // get the selected text
-  console.log("send message to tab to request text");
-  chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, clearsignText);
+  saveToClipboard(clear_txt);
 }
 
 function clearsignText(response) {
   clear_txt = response.msg;
+  var signed_txt = plugin().clearsign(clear_txt);
+  saveToClipboard(signed_txt);
+}
+
+function encryptSignText (response) {
+  var clear_txt = response.msg;
 
   // send it to plugin to encrypt
   // hardcode recipient for now
-  var signed_txt = plugin().clearsign(clear_txt);
-
-  var textarea = document.getElementById("tmp-clipboard");
-
-  // now we put the message in the textarea
-  textarea.value = signed_txt;
-
-  // and copy the text from the textarea
-  textarea.select();
-  document.execCommand("copy", false, null);
+  var cipher_txt = plugin().encrypt_sign("j.schrittwieser@gmail.com", clear_txt);
+  saveToClipboard(cipher_txt);
 }
-
-
 
 function load()
 {
   // add entry to context menu
-  console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": encryptSelection}) );
-  console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": decryptSelection}) );
-  console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": clearsignSelection}) );
+  console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": function(info, tab) {
+    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptText);
+  } }) );
+  console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": function(info, tab) {
+    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, clearsignText);
+  } }) );
+  console.log( chrome.contextMenus.create({"title": "Encrypt & Sign", "contexts":["selection"], "onclick": function(info, tab) {
+    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptSignText);
+  } }) );
+  console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": function(info, tab) {
+    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, decryptText);
+  } }) );
 }
 
 </script>
