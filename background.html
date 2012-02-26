@@ -59,7 +59,7 @@ function load()
   console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": function(info, tab) {
     chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, clearsignText);
   } }) );
-  console.log( chrome.contextMenus.create({"title": "Encrypt & Sign", "contexts":["selection"], "onclick": function(info, tab) {
+  console.log( chrome.contextMenus.create({"title": "Encrypt && Sign", "contexts":["selection"], "onclick": function(info, tab) {
     chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptSignText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": function(info, tab) {
