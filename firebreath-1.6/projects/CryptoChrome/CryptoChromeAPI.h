@@ -35,7 +35,8 @@ public:
         registerMethod("testEvent", make_method(this, &CryptoChromeAPI::testEvent));
         registerMethod("decrypt",   make_method(this, &CryptoChromeAPI::decrypt));
         registerMethod("encrypt",   make_method(this, &CryptoChromeAPI::encrypt));
-        
+        registerMethod("clearsign",   make_method(this, &CryptoChromeAPI::clearsign));
+
         // Read-write property
         registerProperty("testString",
                          make_property(this,
@@ -72,6 +73,7 @@ public:
     // Decrypt
     std::string decrypt(std::string crypt_txt);
     std::string encrypt(std::string recipient, std::string clear_txt);
+    std::string clearsign(std::string clear_txt);
     
     // Event helpers
     FB_JSAPI_EVENT(test, 0, ());

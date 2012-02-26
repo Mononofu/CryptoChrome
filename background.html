@@ -88,11 +88,37 @@ function decryptText(response) {
 
 
 
+function clearsignSelection(info, tab) {
+  // get the selected text
+  console.log("send message to tab to request text");
+  chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, clearsignText);
+}
+
+function clearsignText(response) {
+  clear_txt = response.msg;
+
+  // send it to plugin to encrypt
+  // hardcode recipient for now
+  var signed_txt = plugin().clearsign(clear_txt);
+
+  var textarea = document.getElementById("tmp-clipboard");
+
+  // now we put the message in the textarea
+  textarea.value = signed_txt;
+
+  // and copy the text from the textarea
+  textarea.select();
+  document.execCommand("copy", false, null);
+}
+
+
+
 function load()
 {
   // add entry to context menu
   console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": encryptSelection}) );
   console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": decryptSelection}) );
+  console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": clearsignSelection}) );
 }
 
 </script>

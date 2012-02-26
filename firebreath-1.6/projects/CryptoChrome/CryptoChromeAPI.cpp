@@ -107,12 +107,39 @@ std::string CryptoChromeAPI::encrypt(std::string recipient, std::string clear_tx
     std::vector<std::string> gpgargs;
     gpgargs.push_back("/usr/bin/gpg");
     gpgargs.push_back("--encrypt");
-    gpgargs.push_back("-quiet");
+    gpgargs.push_back("--quiet");
     gpgargs.push_back("--no-tty"); 
     gpgargs.push_back("--always-trust");    // maybe remove this?
     gpgargs.push_back("--armor");
     gpgargs.push_back("--recipient");
     gpgargs.push_back(recipient);   // email of the recipient
+    ep.add_execp(&gpgargs);
+
+    std::string output;
+    ep.set_output_string(&output);
+
+    try {
+        ep.run();
+    }
+    catch (std::runtime_error &e) {
+        return e.what();
+    }
+
+    return output;
+}
+
+std::string CryptoChromeAPI::clearsign(std::string clear_txt)
+{
+    stx::ExecPipe ep;
+
+    ep.set_input_string(&clear_txt);
+
+    std::vector<std::string> gpgargs;
+    gpgargs.push_back("/usr/bin/gpg");
+    gpgargs.push_back("--clearsign");
+    gpgargs.push_back("--quiet");
+    gpgargs.push_back("--no-tty"); 
+    gpgargs.push_back("--armor");
     ep.add_execp(&gpgargs);
 
     std::string output;
