@@ -20,6 +20,12 @@ function saveToClipboard(text) {
   document.execCommand("copy", false, null);
 }
 
+function readClipboard() {
+  var textarea = document.getElementById("tmp-clipboard");
+  textarea.select();
+  return document.execCommand("paste", false, null);
+}
+
 function replaceText(tab_id, next_txt) {
   chrome.tabs.sendRequest(tab_id, {cmd: "replace_selected", text: next_txt}, function() {});
 }
@@ -77,6 +83,7 @@ function load()
     withTabSelection(tab, decryptText, info.editable);
   } });
 
+  // todo: make those actually behave correctly
   fromClipboard = chrome.contextMenus.create({"parentId": root, "title": "From Clipboard", "contexts": ["editable"]});
   chrome.contextMenus.create({"parentId": fromClipboard, "title": "Encrypt", "contexts":["editable"], "onclick": function(info, tab) {
     withTabSelection(tab, encryptText, info.editable);
