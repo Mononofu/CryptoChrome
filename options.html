@@ -23,12 +23,22 @@ function load()
   }
 }
 
+function set_path()
+{
+  plugin().set_gpg_path(document.forms[0].elements['path'].value);
+}
+
 </script>
 
 </head>
 <body onload="load()">
 
 <div>gpg version<div id="version"></div></div>
+
+<form>
+  Path: <input type="text" name="paph" value="gpg" />
+  <input type="submit" value="Set" onclick="set_path();" />
+</form>
 
 
 
