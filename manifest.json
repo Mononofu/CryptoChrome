@@ -9,7 +9,8 @@
   },
 
   "plugins": [
-    { "path": "npCryptoChrome.so", "public": true}
+    { "path": "CryptoChrome.plugin"},
+    { "path": "npCryptoChrome.so"}
   ],
 
   "permissions": [
