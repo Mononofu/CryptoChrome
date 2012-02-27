@@ -25,7 +25,11 @@ function load()
 
 function set_path()
 {
-  plugin().set_gpg_path(document.forms[0].elements['path'].value);
+  try {
+    plugin().set_gpg_path(document.getElementById("path").value);
+  } catch(e) {}
+  load();
+  return false;
 }
 
 </script>
@@ -33,11 +37,11 @@ function set_path()
 </head>
 <body onload="load()">
 
-<div>gpg version<div id="version"></div></div>
+<div>gpg version: <pre id="version"></pre></div>
 
-<form>
-  Path: <input type="text" name="paph" value="gpg" />
-  <input type="submit" value="Set" onclick="set_path();" />
+<form onsubmit="return set_path()">
+  Path: <input type="text" id="path" placeholder="gpg" />
+  <input type="submit" value="Set" onclick="return set_path()" />
 </form>
 
 
