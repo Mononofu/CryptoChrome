@@ -1,6 +1,6 @@
 {
   "name": "CryptoChrome",
-  "version": "1.0",
+  "version": "1.1",
   "description": "A GnuPG interface for Chrome",
   "background_page": "background.html",
 

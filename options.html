@@ -12,10 +12,7 @@ plugin = plugin0;
 function load()
 {
   var versionNode = document.getElementById("version");
-  versionNode.innerHTML = "unkown";
-  var version = plugin.gpg_version();
-  versionNode.innerHTML = version;
-
+  versionNode.innerHTML = plugin().gpg_version();
 }
 
 </script>
@@ -23,10 +20,10 @@ function load()
 </head>
 <body onload="load()">
 
-<embed id="plugin" type="application/x-cryptochrome">
-
 <div>gpg version<div id="version"></div></div>
 
 
+
+<embed style="visibility:hidden;" id="plugin" type="application/x-cryptochrome">
 </body>
 </html>
