@@ -23,7 +23,8 @@ function saveToClipboard(text) {
 function readClipboard() {
   var textarea = document.getElementById("tmp-clipboard");
   textarea.select();
-  return document.execCommand("paste", false, null);
+  document.execCommand("paste", false, null);
+  return textarea.value;
 }
 
 function replaceText(tab_id, next_txt) {
@@ -64,6 +65,18 @@ function withTabSelection (tab, processor, replace) {
   });
 }
 
+function withClipboard(tab, processor) {
+  text = readClipboard();
+  console.log(text);
+  
+  chrome.tabs.executeScript(tab.id, {"file": "content_script.js"}, function() {
+    console.log(text);
+    var processed = processor(text);
+    console.log(processed);
+    replaceText(tab.id, processed);
+  });
+}
+
 function load()
 {
   // add entry to context menu
@@ -86,16 +99,16 @@ function load()
   // todo: make those actually behave correctly
   fromClipboard = chrome.contextMenus.create({"parentId": root, "title": "From Clipboard", "contexts": ["editable"]});
   chrome.contextMenus.create({"parentId": fromClipboard, "title": "Encrypt", "contexts":["editable"], "onclick": function(info, tab) {
-    withTabSelection(tab, encryptText, info.editable);
+    withClipboard(tab, encryptText);
   } });
   chrome.contextMenus.create({"parentId": fromClipboard, "title": "Clearsign", "contexts":["editable"], "onclick": function(info, tab) {
-    withTabSelection(tab, clearsignText, info.editable);
+    withClipboard(tab, clearsignText);
   } });
   chrome.contextMenus.create({"parentId": fromClipboard, "title": "Encrypt && Sign", "contexts":["editable"], "onclick": function(info, tab) {
-    withTabSelection(tab, encryptSignText, info.editable);
+    withClipboard(tab, encryptSignText);
   } });
   chrome.contextMenus.create({"parentId": fromClipboard, "title": "Decrypt", "contexts":["editable"], "onclick": function(info, tab) {
-    withTabSelection(tab, decryptText, info.editable);
+    withClipboard(tab, decryptText);
   } });
 }
 
