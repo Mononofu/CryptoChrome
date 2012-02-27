@@ -67,12 +67,9 @@ function withTabSelection (tab, processor, replace) {
 
 function withClipboard(tab, processor) {
   text = readClipboard();
-  console.log(text);
   
   chrome.tabs.executeScript(tab.id, {"file": "content_script.js"}, function() {
-    console.log(text);
     var processed = processor(text);
-    console.log(processed);
     replaceText(tab.id, processed);
   });
 }
@@ -96,7 +93,6 @@ function load()
     withTabSelection(tab, decryptText, info.editable);
   } });
 
-  // todo: make those actually behave correctly
   fromClipboard = chrome.contextMenus.create({"parentId": root, "title": "From Clipboard", "contexts": ["editable"]});
   chrome.contextMenus.create({"parentId": fromClipboard, "title": "Encrypt", "contexts":["editable"], "onclick": function(info, tab) {
     withClipboard(tab, encryptText);
