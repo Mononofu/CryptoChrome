@@ -20,36 +20,40 @@ function saveToClipboard(text) {
   document.execCommand("copy", false, null);
 }
 
+function replaceText(tab_id, next_txt) {
+  chrome.tabs.sendRequest(tab_id, {cmd: "replace_selected", text: next_txt}, function() {});
+}
+
 function encryptText(clear_txt) {
   if(clear_txt != "") {
     var recipient = prompt("Please enter the recipients email","");
-    var cipher_txt = plugin().encrypt(recipient, clear_txt);
-    saveToClipboard(cipher_txt);
+    return plugin().encrypt(recipient, clear_txt);
   }
+  return "";
 }
 
 function decryptText(cipther_txt) {
-  var clear_txt = plugin().decrypt(cipther_txt);
-  saveToClipboard(clear_txt);
+  return plugin().decrypt(cipther_txt);
 }
 
 function clearsignText(clear_txt) {
-  var signed_txt = plugin().clearsign(clear_txt);
-  saveToClipboard(signed_txt);
+  return plugin().clearsign(clear_txt);
 }
 
 function encryptSignText (clear_txt) {
   if(clear_txt != "") {
     var recipient = prompt("Please enter the recipients email","");
-    var cipher_txt = plugin().encrypt_sign(recipient, clear_txt);
-    saveToClipboard(cipher_txt);
+    return plugin().encrypt_sign(recipient, clear_txt);
   }
+  return "";
 }
 
-function withTabSelection (tab, processor) {
+function withTabSelection (tab, processor, replace) {
+  responseHandler = replace ? replaceText.bind(null, tab.id) : saveToClipboard;
+
   chrome.tabs.executeScript(tab.id, {"file": "content_script.js"}, function() {
     chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, function(response) {
-      processor(response.msg);
+      responseHandler(processor(response.msg));
     });
   });
 }
@@ -58,16 +62,16 @@ function load()
 {
   // add entry to context menu
   console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": function(info, tab) {
-    withTabSelection(tab, encryptText);
+    withTabSelection(tab, encryptText, info.editable);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": function(info, tab) {
-    withTabSelection(tab, clearsignText);
+    withTabSelection(tab, clearsignText, info.editable);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Encrypt && Sign", "contexts":["selection"], "onclick": function(info, tab) {
-    withTabSelection(tab, encryptSignText);
+    withTabSelection(tab, encryptSignText, info.editable);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": function(info, tab) {
-    withTabSelection(tab, decryptText);
+    withTabSelection(tab, decryptText, info.editable);
   } }) );
 }
 

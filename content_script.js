@@ -11,6 +11,38 @@ var channel = channel || function(request, sender, sendResponse) {
 	  txt = document.getSelection();
 	}
     sendResponse( { msg: ""+txt } );
+  } else if (request.cmd == "replace_selected") {
+    function getNode(node, string) {
+      if(node.nodeType == Node.TEXT_NODE && node.data.indexOf(string) >= 0) {
+        return node;
+      } else if (node.nodeType != Node.TEXT_NODE) {
+        if (node.value && node.value.indexOf(string) >= 0) {
+          return node;
+        }
+        for (var i=0; i < node.childNodes.length;i++) {
+          var ret = getNode(node.childNodes[i], string);
+          if (ret) {
+            return ret;
+          }
+        }
+      }
+      return null;
+    }
+
+    var replacement = request.text;
+    var selection = window.getSelection();
+    var el = getNode(selection.anchorNode, selection.toString());
+    if (!el) {
+      alert(replacement);
+    } else if (el.nodeType == Node.TEXT_NODE) {
+      var pos = el.data.indexOf(selection.toString());
+      var newText = document.createTextNode(el.data.substring(0,pos) + replacement + el.data.substring(pos+selection.toString().length));
+      el.parentNode.insertBefore(newText, el);
+      el.parentNode.removeChild(el);
+    } else {
+      var pos = el.value.indexOf(selection.toString());
+      el.value = el.value.substring(0,pos) + replacement + el.value.substring(pos+selection.toString().length);
+    }
   } else {
     sendResponse({}); // snub them.
   }
