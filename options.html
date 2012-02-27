@@ -1,0 +1,32 @@
+<html>
+<head>
+<script>
+
+function plugin0() {
+  return document.getElementById('plugin');
+}
+
+plugin = plugin0;
+
+
+function load()
+{
+  var versionNode = document.getElementById("version");
+  versionNode.innerHTML = "unkown";
+  var version = plugin.gpg_version();
+  versionNode.innerHTML = version;
+
+}
+
+</script>
+
+</head>
+<body onload="load()">
+
+<embed id="plugin" type="application/x-cryptochrome">
+
+<div>gpg version<div id="version"></div></div>
+
+
+</body>
+</html>

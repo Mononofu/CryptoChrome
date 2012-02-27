@@ -13,6 +13,8 @@
     { "path": "npCryptoChrome.so"}
   ],
 
+  "options_page": "options.html",
+
   "permissions": [
     "tabs", "contextMenus", "<all_urls>", "clipboardRead", "clipboardWrite"
   ]
