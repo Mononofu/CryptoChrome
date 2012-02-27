@@ -12,7 +12,15 @@ plugin = plugin0;
 function load()
 {
   var versionNode = document.getElementById("version");
-  versionNode.innerHTML = plugin().gpg_version();
+  try {
+    versionNode.innerHTML = plugin().gpg_version();
+  } catch(e) {
+    if (e.type == "undefined_method") {
+      versionNode.innerHTML = "Plugin Unavailable.";
+    } else {
+      versionNode.innerHTML = e;
+    }
+  }
 }
 
 </script>
