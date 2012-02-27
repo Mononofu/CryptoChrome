@@ -20,8 +20,7 @@ function saveToClipboard(text) {
   document.execCommand("copy", false, null);
 }
 
-function encryptText(response) {
-  var clear_txt = response.msg;
+function encryptText(clear_txt) {
   if(clear_txt != "") {
     var recipient = prompt("Please enter the recipients email","");
     var cipher_txt = plugin().encrypt(recipient, clear_txt);
@@ -29,20 +28,17 @@ function encryptText(response) {
   }
 }
 
-function decryptText(response) {
-  cipther_txt = response.msg;
+function decryptText(cipther_txt) {
   var clear_txt = plugin().decrypt(cipther_txt);
   saveToClipboard(clear_txt);
 }
 
-function clearsignText(response) {
-  clear_txt = response.msg;
+function clearsignText(clear_txt) {
   var signed_txt = plugin().clearsign(clear_txt);
   saveToClipboard(signed_txt);
 }
 
-function encryptSignText (response) {
-  var clear_txt = response.msg;
+function encryptSignText (clear_txt) {
   if(clear_txt != "") {
     var recipient = prompt("Please enter the recipients email","");
     var cipher_txt = plugin().encrypt_sign(recipient, clear_txt);
@@ -54,16 +50,16 @@ function load()
 {
   // add entry to context menu
   console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": function(info, tab) {
-    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptText);
+    encryptText(info.selectionText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": function(info, tab) {
-    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, clearsignText);
+    clearsignText(info.selectionText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Encrypt && Sign", "contexts":["selection"], "onclick": function(info, tab) {
-    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptSignText);
+    encryptSignText(info.selectionText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": function(info, tab) {
-    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, decryptText);
+    decryptText(info.selectionText);
   } }) );
 }
 
