@@ -13,6 +13,6 @@
   ],
 
   "permissions": [
-    "tabs", "http://*/*", "https://*/*", "contextMenus"
+    "tabs", "contextMenus"
   ]
 }
