@@ -68,8 +68,46 @@ void CryptoChromeAPI::testEvent()
     fire_test();
 }
 
+std::string CryptoChromeAPI::get_gpg()
+{
+  if (m_gpgpath.length() == 0) {
+    return "gpg";
+  }
+  return m_gpgpath;
+}
 
-// Decrypt
+// Configuration
+std::string CryptoChromeAPI::gpg_version()
+{
+    stx::ExecPipe ep;               // creates new pipe
+    
+    std::vector<std::string> gpgargs;
+    gpgargs.push_back(get_gpg());
+    gpgargs.push_back("--version");
+    ep.add_execp(&gpgargs);
+
+    std::string output;
+    ep.set_output_string(&output);
+    
+    try {
+        ep.run();
+    }
+    catch (std::runtime_error &e) {
+        return e.what();
+    }
+
+    return output;
+}
+
+std::string CryptoChromeAPI::set_gpg_path(std::string path)
+{
+    m_gpgpath = path;
+    return this->gpg_version();
+}
+
+
+
+// Text Processing
 std::string CryptoChromeAPI::decrypt(std::string crypt_txt)
 {
     stx::ExecPipe ep;               // creates new pipe
@@ -77,7 +115,7 @@ std::string CryptoChromeAPI::decrypt(std::string crypt_txt)
     ep.set_input_string(&crypt_txt);
     
     std::vector<std::string> gpgargs;
-    gpgargs.push_back("/usr/bin/gpg");
+    gpgargs.push_back(get_gpg());
     gpgargs.push_back("--quiet");
     gpgargs.push_back("--no-tty"); 
     gpgargs.push_back("--decrypt");
@@ -107,7 +145,7 @@ std::string CryptoChromeAPI::encrypt(std::string recipient, std::string clear_tx
     ep.set_input_string(&clear_txt);
 
     std::vector<std::string> gpgargs;
-    gpgargs.push_back("/usr/bin/gpg");
+    gpgargs.push_back(get_gpg());
     gpgargs.push_back("--encrypt");
     gpgargs.push_back("--quiet");
     gpgargs.push_back("--no-tty"); 
@@ -139,7 +177,7 @@ std::string CryptoChromeAPI::clearsign(std::string clear_txt)
     ep.set_input_string(&clear_txt);
 
     std::vector<std::string> gpgargs;
-    gpgargs.push_back("/usr/bin/gpg");
+    gpgargs.push_back(get_gpg());
     gpgargs.push_back("--clearsign");
     gpgargs.push_back("--quiet");
     gpgargs.push_back("--no-tty"); 
@@ -169,7 +207,7 @@ std::string CryptoChromeAPI::encrypt_sign(std::string recipient, std::string cle
     ep.set_input_string(&clear_txt);
 
     std::vector<std::string> gpgargs;
-    gpgargs.push_back("/usr/bin/gpg");
+    gpgargs.push_back(get_gpg());
     gpgargs.push_back("--encrypt");
     gpgargs.push_back("--sign");
     gpgargs.push_back("--quiet");

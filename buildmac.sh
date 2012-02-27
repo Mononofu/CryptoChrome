@@ -7,15 +7,15 @@ if [ ! -d "firebreath-1.6/build" ]; then
 	mv tmp/* firebreath-1.6/
 	rmdir tmp
 	cd firebreath-1.6
-	./prepmake.sh
+	./prepmake.sh -D CMAKE_OSX_ARCHITECTURES=i386
 	cd ..
 fi
 
 cd firebreath-1.6/build
 make -j 4
 cd ../..
-cp firebreath-1.6/build/bin/CryptoChrome/npCryptoChrome.so .
-if [ ! -f CryptoChrome.plugin ];
+cp -r firebreath-1.6/build/projects/CryptoChrome/CryptoChrome.plugin .
+if [ ! -f npCryptoChrome.so ];
 then
-	touch CryptoChrome.plugin
+	touch npCryptoChrome.so
 fi
