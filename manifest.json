@@ -8,10 +8,6 @@
     "48": "gnupg.jpg"
   },
 
-  "content_scripts": [
-    { "matches": ["<all_urls>"], "js": ["content_script.js"], "all_frames": true }
-  ],
-
   "plugins": [
     { "path": "npCryptoChrome.so", "public": true}
   ],

@@ -54,16 +54,16 @@ function load()
 {
   // add entry to context menu
   console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": function(info, tab) {
-    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptText);
+    encryptText(info.selectionText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": function(info, tab) {
-    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, clearsignText);
+    clearsignText(info.selectionText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Encrypt && Sign", "contexts":["selection"], "onclick": function(info, tab) {
-    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, encryptSignText);
+    encryptSignText(info.selectionText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": function(info, tab) {
-    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, decryptText);
+    decryptText(info.selectionText);
   } }) );
 }
 
