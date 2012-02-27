@@ -1,23 +1,24 @@
-chrome.extension.onRequest.addListener(
-  function(request, sender, sendResponse) {
-    console.log(sender.tab ?
-                "from a content script:" + sender.tab.url :
-                "from the extension");
-    // The background page is asking us for the selected text
-    if (request.cmd == "get_selected")
-    {
-    	var txt = '';
-	    if (window.getSelection)
-				txt = window.getSelection();
-	    else if (document.getSelection)
-	      txt = document.getSelection();
-	    else if (document.selection)
-	      txt = document.selection.createRange().text;
-      sendResponse( { msg: ""+txt } );
-    }
-    else
-      sendResponse({}); // snub them.
-  });
+var channel = channel || function(request, sender, sendResponse) {
+  console.log(sender.tab ?
+      "from a content script:" + sender.tab.url : "from the extension");
+  // The background page is asking us for the selected text
+  if (request.cmd == "get_selected")
+  {
+    var txt = '';
+	if (window.getSelection) {
+	  txt = window.getSelection();
+	} else if (document.getSelection) {
+	  txt = document.getSelection();
+	}
+    sendResponse( { msg: ""+txt } );
+  } else {
+    sendResponse({}); // snub them.
+  }
+};
+
+if (!chrome.extension.onRequest.hasListener(channel)) {
+  chrome.extension.onRequest.addListener(channel);
+}
 
 // Search the text nodes for PGP message.
 // Return null if none is found.

@@ -46,20 +46,28 @@ function encryptSignText (clear_txt) {
   }
 }
 
+function withTabSelection (tab, processor) {
+  chrome.tabs.executeScript(tab.id, {"file": "content_script.js"}, function() {
+    chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, function(response) {
+      processor(response.msg);
+    });
+  });
+}
+
 function load()
 {
   // add entry to context menu
   console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": function(info, tab) {
-    encryptText(info.selectionText);
+    withTabSelection(tab, encryptText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": function(info, tab) {
-    clearsignText(info.selectionText);
+    withTabSelection(tab, clearsignText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Encrypt && Sign", "contexts":["selection"], "onclick": function(info, tab) {
-    encryptSignText(info.selectionText);
+    withTabSelection(tab, encryptSignText);
   } }) );
   console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": function(info, tab) {
-    decryptText(info.selectionText);
+    withTabSelection(tab, decryptText);
   } }) );
 }
 
