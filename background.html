@@ -61,18 +61,35 @@ function withTabSelection (tab, processor, replace) {
 function load()
 {
   // add entry to context menu
-  console.log( chrome.contextMenus.create({"title": "Encrypt", "contexts":["selection"], "onclick": function(info, tab) {
+  root = chrome.contextMenus.create({"title": "CryptoChrome", "contexts": ["selection", "editable"]});
+
+  selection = chrome.contextMenus.create({"parentId": root, "title": "Selection", "contexts": ["selection"]});
+  chrome.contextMenus.create({"parentId": selection, "title": "Encrypt", "contexts":["selection"], "onclick": function(info, tab) {
     withTabSelection(tab, encryptText, info.editable);
-  } }) );
-  console.log( chrome.contextMenus.create({"title": "Clearsign", "contexts":["selection"], "onclick": function(info, tab) {
+  } });
+  chrome.contextMenus.create({"parentId": selection, "title": "Clearsign", "contexts":["selection"], "onclick": function(info, tab) {
     withTabSelection(tab, clearsignText, info.editable);
-  } }) );
-  console.log( chrome.contextMenus.create({"title": "Encrypt && Sign", "contexts":["selection"], "onclick": function(info, tab) {
+  } });
+  chrome.contextMenus.create({"parentId": selection, "title": "Encrypt && Sign", "contexts":["selection"], "onclick": function(info, tab) {
     withTabSelection(tab, encryptSignText, info.editable);
-  } }) );
-  console.log( chrome.contextMenus.create({"title": "Decrypt", "contexts":["selection"], "onclick": function(info, tab) {
+  } });
+  chrome.contextMenus.create({"parentId": selection, "title": "Decrypt", "contexts":["selection"], "onclick": function(info, tab) {
     withTabSelection(tab, decryptText, info.editable);
-  } }) );
+  } });
+
+  fromClipboard = chrome.contextMenus.create({"parentId": root, "title": "From Clipboard", "contexts": ["editable"]});
+  chrome.contextMenus.create({"parentId": fromClipboard, "title": "Encrypt", "contexts":["editable"], "onclick": function(info, tab) {
+    withTabSelection(tab, encryptText, info.editable);
+  } });
+  chrome.contextMenus.create({"parentId": fromClipboard, "title": "Clearsign", "contexts":["editable"], "onclick": function(info, tab) {
+    withTabSelection(tab, clearsignText, info.editable);
+  } });
+  chrome.contextMenus.create({"parentId": fromClipboard, "title": "Encrypt && Sign", "contexts":["editable"], "onclick": function(info, tab) {
+    withTabSelection(tab, encryptSignText, info.editable);
+  } });
+  chrome.contextMenus.create({"parentId": fromClipboard, "title": "Decrypt", "contexts":["editable"], "onclick": function(info, tab) {
+    withTabSelection(tab, decryptText, info.editable);
+  } });
 }
 
 </script>
