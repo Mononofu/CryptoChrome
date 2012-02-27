@@ -33,6 +33,10 @@ public:
     {
         registerMethod("echo",      make_method(this, &CryptoChromeAPI::echo));
         registerMethod("testEvent", make_method(this, &CryptoChromeAPI::testEvent));
+
+        registerMethod("gpg_version",   make_method(this, &CryptoChromeAPI::gpg_version));
+        registerMethod("set_gpg_path",   make_method(this, &CryptoChromeAPI::set_gpg_path));
+
         registerMethod("decrypt",   make_method(this, &CryptoChromeAPI::decrypt));
         registerMethod("encrypt",   make_method(this, &CryptoChromeAPI::encrypt));
         registerMethod("clearsign",   make_method(this, &CryptoChromeAPI::clearsign));
@@ -50,6 +54,8 @@ public:
         registerProperty("version",
                          make_property(this,
                                        &CryptoChromeAPI::get_version));
+        
+        m_gpgpath = std::string();
     }
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -73,7 +79,11 @@ public:
     // Method echo
     FB::variant echo(const FB::variant& msg);
 
-    // Decrypt
+    // Configuration
+    std::string gpg_version();
+    std::string set_gpg_path(std::string path);
+
+    // Text Processing
     std::string decrypt(std::string crypt_txt);
     std::string encrypt(std::string recipient, std::string clear_txt);
     std::string clearsign(std::string clear_txt);
@@ -91,6 +101,8 @@ private:
     FB::BrowserHostPtr m_host;
 
     std::string m_testString;
+    std::string m_gpgpath;
+    std::string get_gpg();
 };
 
 #endif // H_CryptoChromeAPI
