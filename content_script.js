@@ -6,28 +6,8 @@ var isSelectedFrame = function() {
   return null;
 }
 
-var getNodeWithText = function(root, string) {
-  if(root.nodeType == Node.TEXT_NODE && root.data.indexOf(string) >= 0) {
-    return root;
-  } else if (root.nodeType != Node.TEXT_NODE) {
-    if (root.value && root.value.indexOf(string) >= 0) {
-      return root;
-    }
-
-    for (var i=0; i < root.childNodes.length;i++) {
-      var ret = getNodeWithText(root.childNodes[i], string);
-      if (ret) {
-        return ret;
-      }
-    }
-  }
-  return null;
-}
-
 var channel = channel || function(request, sender, sendResponse) {
-  console.log(sender.tab ?
-      "from a content script:" + sender.tab.url : "from the extension");
-  // The background page is asking us for the selected text
+  // The background page is asking for selected text.
   if (request.cmd == "get_selected")
   {
     var txt = '';
@@ -40,23 +20,39 @@ var channel = channel || function(request, sender, sendResponse) {
 	  txt = window.document.getSelection();
 	}
     sendResponse( { msg: ""+txt } );
+  // The background page is asking us to replace selection with processed text.
   } else if (request.cmd == "replace_selected") {
     var replacement = request.text;
     if(!isSelectedFrame()) {
       return;
     }
     var selection = window.getSelection();
-    var el = getNodeWithText(selection.anchorNode, selection.toString());
-    if (!el) {
-      alert(replacement);
-    } else if (el.nodeType == Node.TEXT_NODE) {
+    if (selection.anchorNode == selection.focusNode && selection.anchorNode.nodeType == Node.TEXT_NODE) {
+      var el = selection.anchorNode;
       var pos = el.data.indexOf(selection.toString());
       var newText = window.document.createTextNode(el.data.substring(0,pos) + replacement + el.data.substring(pos+selection.toString().length));
       el.parentNode.insertBefore(newText, el);
       el.parentNode.removeChild(el);
-    } else {
+    } else if (selection.anchorNode == selection.focusNode && selection.anchorNode.value) {
+      var el = selection.anchorNode;
       var pos = el.value.indexOf(selection.toString());
       el.value = el.value.substring(0,pos) + replacement + el.value.substring(pos+selection.toString().length);
+    } else if (selection.anchorNode != selection.focusNode) {
+      if (selection.anchorOffset > 0) {
+      }
+      selection.deleteFromDocument();
+      var el = selection.anchorNode;
+      var newText = document.createElement("span");
+      newText.innerHTML = replacement.replace(/\n/g,"<br/>");
+      if (el.nodeType == Node.TEXT_NODE) {
+        el.parentNode.insertBefore(newText, el);
+        el.parentNode.removeChild(el);
+      } else {
+        el.appendChild(newText);
+      }
+    } else {
+      // A single selected element with no value or text.  Hopefully shouldn't happen.
+      alert(replacement);
     }
   } else {
     sendResponse({}); // snub them.
