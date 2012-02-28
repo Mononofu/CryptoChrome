@@ -2,22 +2,23 @@
 <head>
 <script>
 
-function plugin0() {
-  return document.getElementById('plugin');
-}
-
-plugin = plugin0;
-
-
 function load()
 {
-  var versionNode = document.getElementById("version");
-  versionNode.innerHTML = plugin().gpg_version();
+  chrome.extension.sendRequest({cmd:"version"}, function(response) {
+    var versionNode = document.getElementById("version");
+    versionNode.innerHTML = response.version;
+ });
 }
 
 function set_path()
 {
-  plugin().set_gpg_path(document.forms[0].elements['path'].value);
+  chrome.extension.sendRequest({
+      cmd:"setpath",
+      path:document.getElementById("path").value}, function(response) {
+    var versionNode = document.getElementById("version");
+    versionNode.innerHTML = response.version;
+  });
+  return false;
 }
 
 </script>
@@ -25,15 +26,11 @@ function set_path()
 </head>
 <body onload="load()">
 
-<div>gpg version<div id="version"></div></div>
+<div>gpg version: <pre id="version"></pre></div>
 
-<form>
-  Path: <input type="text" name="paph" value="gpg" />
-  <input type="submit" value="Set" onclick="set_path();" />
+<form onsubmit="return set_path()">
+  Path: <input type="text" id="path" placeholder="gpg" />
+  <input type="submit" value="Set" onclick="return set_path()" />
 </form>
-
-
-
-<embed style="visibility:hidden;" id="plugin" type="application/x-cryptochrome">
 </body>
 </html>
