@@ -44,7 +44,11 @@ function version() {
 }
 
 function setPath(path) {
-  localStorage["gpg-path"] = path;
+  if (path.length > 0 && localStorage["gpg-path"] != "gpg") {
+    localStorage["gpg-path"] = path;
+  } else {
+    localStorage.removeItem("gpg-path");
+  }
   return plugin().set_gpg_path(path);
 }
 
@@ -139,7 +143,8 @@ function load()
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   if (request.cmd == "version") {
-    sendResponse({version:version()});
+    path = localStorage["gpg-path"] || "";
+    sendResponse({version:version(), path:path});
   } else if (request.cmd == "setpath") {
     sendResponse({version:setPath(request.path)});
   }
