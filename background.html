@@ -31,6 +31,23 @@ function replaceText(tab_id, next_txt) {
   chrome.tabs.sendRequest(tab_id, {cmd: "replace_selected", text: next_txt}, function() {});
 }
 
+function version() {
+  try {
+    return plugin().gpg_version();
+  } catch(e) {
+    if (e.type == "undefined_method") {
+      return "Plugin Unavailable.";
+    } else {
+      return e;
+    }
+  }
+}
+
+function setPath(path) {
+  return plugin().set_gpg_path(path);
+}
+
+
 function encryptText(clear_txt) {
   if(clear_txt && clear_txt.length) {
     var recipient = prompt("Please enter the recipients email","");
@@ -114,12 +131,20 @@ function load()
   } });
 }
 
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+  if (request.cmd == "version") {
+    sendResponse({version:version()});
+  } else if (request.cmd == "setpath") {
+    sendResponse({version:setPath(request.path)});
+  }
+});
+
 </script>
 
 </head>
 <body onload="load()">
 
-<embed id="plugin" type="application/x-cryptochrome">
+<embed id="plugin" type="application/x-cryptochrome"></embed>
 <textarea id="tmp-clipboard"></textarea>
 
 </body>
