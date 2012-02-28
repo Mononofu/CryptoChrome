@@ -81,7 +81,7 @@ function encryptSignText (clear_txt) {
 function withTabSelection (tab, processor, replace) {
   responseHandler = replace ? replaceText.bind(null, tab.id) : saveToClipboard;
 
-  chrome.tabs.executeScript(tab.id, {"file": "content_script.js"}, function() {
+  chrome.tabs.executeScript(tab.id, {"file": "content_script.js", "allFrames": true}, function() {
     chrome.tabs.sendRequest(tab.id, {cmd: "get_selected"}, function(response) {
       responseHandler(processor(response.msg));
     });
