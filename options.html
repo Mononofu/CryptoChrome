@@ -6,6 +6,7 @@ function load()
 {
   chrome.extension.sendRequest({cmd:"version"}, function(response) {
     var versionNode = document.getElementById("version");
+    document.getElementById("path").value = response.path;
     versionNode.innerHTML = response.version;
  });
 
