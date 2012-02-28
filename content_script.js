@@ -1,3 +1,29 @@
+var isSelectedFrame = function() {
+  // Top window.
+  if ((""+window.getSelection()).length > 0) {
+    return window;
+  }
+  return null;
+}
+
+var getNodeWithText = function(root, string) {
+  if(root.nodeType == Node.TEXT_NODE && root.data.indexOf(string) >= 0) {
+    return root;
+  } else if (root.nodeType != Node.TEXT_NODE) {
+    if (root.value && root.value.indexOf(string) >= 0) {
+      return root;
+    }
+
+    for (var i=0; i < root.childNodes.length;i++) {
+      var ret = getNodeWithText(root.childNodes[i], string);
+      if (ret) {
+        return ret;
+      }
+    }
+  }
+  return null;
+}
+
 var channel = channel || function(request, sender, sendResponse) {
   console.log(sender.tab ?
       "from a content script:" + sender.tab.url : "from the extension");
@@ -5,38 +31,27 @@ var channel = channel || function(request, sender, sendResponse) {
   if (request.cmd == "get_selected")
   {
     var txt = '';
+    if(!isSelectedFrame()) {
+      return;
+    }
 	if (window.getSelection) {
 	  txt = window.getSelection();
-	} else if (document.getSelection) {
-	  txt = document.getSelection();
+	} else if (window.document.getSelection) {
+	  txt = window.document.getSelection();
 	}
     sendResponse( { msg: ""+txt } );
   } else if (request.cmd == "replace_selected") {
-    function getNode(node, string) {
-      if(node.nodeType == Node.TEXT_NODE && node.data.indexOf(string) >= 0) {
-        return node;
-      } else if (node.nodeType != Node.TEXT_NODE) {
-        if (node.value && node.value.indexOf(string) >= 0) {
-          return node;
-        }
-        for (var i=0; i < node.childNodes.length;i++) {
-          var ret = getNode(node.childNodes[i], string);
-          if (ret) {
-            return ret;
-          }
-        }
-      }
-      return null;
-    }
-
     var replacement = request.text;
+    if(!isSelectedFrame()) {
+      return;
+    }
     var selection = window.getSelection();
-    var el = getNode(selection.anchorNode, selection.toString());
+    var el = getNodeWithText(selection.anchorNode, selection.toString());
     if (!el) {
       alert(replacement);
     } else if (el.nodeType == Node.TEXT_NODE) {
       var pos = el.data.indexOf(selection.toString());
-      var newText = document.createTextNode(el.data.substring(0,pos) + replacement + el.data.substring(pos+selection.toString().length));
+      var newText = window.document.createTextNode(el.data.substring(0,pos) + replacement + el.data.substring(pos+selection.toString().length));
       el.parentNode.insertBefore(newText, el);
       el.parentNode.removeChild(el);
     } else {
