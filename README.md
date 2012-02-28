@@ -15,6 +15,7 @@ Building
 ========
 
 This should be easy, just run
+
 		./build.sh
 
 However, make sure that you have libgtk2.0-dev and cmake installed. Of course, you'll also need make, gcc, etc.
