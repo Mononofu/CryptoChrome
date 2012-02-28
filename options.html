@@ -8,6 +8,10 @@ function load()
     var versionNode = document.getElementById("version");
     versionNode.innerHTML = response.version;
  });
+
+  var path = localStorage["gpg-path"];
+  if(path != undefined)
+    document.getElementById("path").value = path;
 }
 
 function set_path()
@@ -25,6 +29,8 @@ function set_path()
 
 </head>
 <body onload="load()">
+
+  <h1>CryptoChrome</h1>
 
 <div>gpg version: <pre id="version"></pre></div>
 

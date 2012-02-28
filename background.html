@@ -44,6 +44,7 @@ function version() {
 }
 
 function setPath(path) {
+  localStorage["gpg-path"] = path;
   return plugin().set_gpg_path(path);
 }
 
@@ -99,6 +100,11 @@ function withClipboard(tab, processor) {
 
 function load()
 {
+  // load path from storage
+  var path = localStorage["gpg-path"];
+  if(path != undefined)
+    setPath(path);
+
   // add entry to context menu
   root = chrome.contextMenus.create({"title": "CryptoChrome", "contexts": ["selection", "editable"]});
 
