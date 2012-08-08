@@ -1,21 +1,21 @@
 {
   "name": "CryptoChrome",
   "version": "1.1",
-  "description": "A GnuPG interface for Chrome",
-  "background_page": "background.html",
+  "manifest_version": 2,
 
+  "description": "A GnuPG interface for Chrome",
   "icons": {
     "48": "gnupg.jpg"
   },
-
+  "background": {
+    "page": "background.html"
+  },
+  "permissions": [
+    "tabs", "contextMenus", "<all_urls>", "clipboardRead", "clipboardWrite"
+  ],
+  "options_page": "options.html",
   "plugins": [
     { "path": "CryptoChrome.plugin"},
     { "path": "npCryptoChrome.so"}
-  ],
-
-  "options_page": "options.html",
-
-  "permissions": [
-    "tabs", "contextMenus", "<all_urls>", "clipboardRead", "clipboardWrite"
   ]
 }
