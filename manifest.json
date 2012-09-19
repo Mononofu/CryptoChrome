@@ -4,7 +4,6 @@
   "manifest_version": 2,
   "description": "A GnuPG interface for Chrome",
 
-
   "background": {
     "page": "background.html"
   },
@@ -12,14 +11,14 @@
   "icons": {
     "48": "gnupg.jpg"
   },
-
-  "plugins": [
-    { "path": "npCryptoChrome.so"}
-  ],
-
-  "options_page": "options.html",
-
+  "background": {
+    "page": "background.html"
+  },
   "permissions": [
     "tabs", "contextMenus", "<all_urls>", "clipboardRead", "clipboardWrite"
+  ],
+  "options_page": "options.html",
+  "plugins": [
+    { "path": "npCryptoChrome.so"}
   ]
 }

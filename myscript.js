@@ -91,13 +91,12 @@ function withTabSelection (tab, processor, replace) {
 
 function withClipboard(tab, processor) {
   text = readClipboard();
-
+  
   chrome.tabs.executeScript(tab.id, {"file": "content_script.js"}, function() {
     var processed = processor(text);
     replaceText(tab.id, processed);
   });
 }
-
 
 function load()
 {
@@ -107,9 +106,9 @@ function load()
     setPath(path);
 
   // add entry to context menu
-  var root = chrome.contextMenus.create({"title": "CryptoChrome", "contexts": ["selection", "editable"]});
+  root = chrome.contextMenus.create({"title": "CryptoChrome", "contexts": ["selection", "editable"]});
 
-  var selection = chrome.contextMenus.create({"parentId": root, "title": "Selection", "contexts": ["selection"]});
+  selection = chrome.contextMenus.create({"parentId": root, "title": "Selection", "contexts": ["selection"]});
   chrome.contextMenus.create({"parentId": selection, "title": "Encrypt", "contexts":["selection"], "onclick": function(info, tab) {
     withTabSelection(tab, encryptText, info.editable);
   } });
@@ -123,7 +122,7 @@ function load()
     withTabSelection(tab, decryptText, info.editable);
   } });
 
-  var fromClipboard = chrome.contextMenus.create({"parentId": root, "title": "From Clipboard", "contexts": ["editable"]});
+  fromClipboard = chrome.contextMenus.create({"parentId": root, "title": "From Clipboard", "contexts": ["editable"]});
   chrome.contextMenus.create({"parentId": fromClipboard, "title": "Encrypt", "contexts":["editable"], "onclick": function(info, tab) {
     withClipboard(tab, encryptText);
   } });
@@ -147,5 +146,4 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
   }
 });
 
-
-window.onload = load;
+load()
